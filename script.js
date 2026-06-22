@@ -18,6 +18,30 @@ if (toggle && menu) {
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+// ---------- Gallery hover "View" tags ----------
+document.querySelectorAll('.gallery figure').forEach(fig => {
+  if (fig.querySelector('.view-tag')) return;
+  const tag = document.createElement('span');
+  tag.className = 'view-tag';
+  tag.textContent = 'View';
+  fig.appendChild(tag);
+});
+
+// ---------- Magnetic button movement ----------
+(() => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || window.matchMedia('(hover: none)').matches) return; // skip on touch / reduced-motion
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('pointermove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.18;
+      const y = (e.clientY - r.top - r.height / 2) * 0.18;
+      btn.style.transform = `translate(${x}px, ${y - 3}px)`;
+    });
+    btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+  });
+})();
+
 // ---------- Header elevation on scroll ----------
 const header = document.querySelector('.site-header');
 if (header) {

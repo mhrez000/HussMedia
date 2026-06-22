@@ -51,16 +51,33 @@ a { color: inherit; text-decoration: none; }
 .section-title.center { margin-left: auto; margin-right: auto; }
 em { font-style: italic; }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons (animated slide-fill + moving arrow) ---------- */
 .btn {
-  display: inline-block; font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
-  font-weight: 500; padding: 15px 30px; border: 1px solid var(--charcoal);
-  transition: all .25s ease; cursor: pointer;
+  display: inline-flex; align-items: center; gap: .65em;
+  font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 500;
+  padding: 16px 32px; border: 1px solid var(--charcoal); cursor: pointer;
+  background-size: 220% 100%; background-position: 100% 0; background-repeat: no-repeat;
+  transition: background-position .5s cubic-bezier(.6, .05, .05, 1), color .35s ease,
+              border-color .35s ease, transform .3s ease, box-shadow .3s ease;
+  will-change: background-position, transform;
 }
-.btn-primary { background: var(--charcoal); color: var(--ivory); }
-.btn-primary:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
-.btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.7); }
-.btn-ghost:hover { background: #fff; color: var(--charcoal); }
+/* Trailing arrow that slides on hover */
+.btn::after { content: "\2192"; font-size: 1.05em; transition: transform .4s cubic-bezier(.6, .05, .05, 1); }
+.btn:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(0, 0, 0, .14); }
+.btn:hover::after { transform: translateX(6px); }
+.btn:active { transform: translateY(-1px); }
+
+.btn-primary {
+  color: var(--ivory);
+  background-image: linear-gradient(90deg, var(--gold-dark) 0 50%, var(--charcoal) 50% 100%);
+}
+.btn-primary:hover { background-position: 0 0; color: #fff; border-color: var(--gold-dark); }
+
+.btn-ghost {
+  color: #fff; border-color: rgba(255, 255, 255, .75);
+  background-image: linear-gradient(90deg, #fff 0 50%, transparent 50% 100%);
+}
+.btn-ghost:hover { background-position: 0 0; color: var(--charcoal); border-color: #fff; }
 
 /* ---------- Header ---------- */
 .site-header {
@@ -220,10 +237,6 @@ em { font-style: italic; }
 }
 .nav-menu a:not(.nav-cta):hover::after { width: 100%; }
 
-/* Button lift */
-.btn { transition: all .25s ease, transform .25s ease; }
-.btn:hover { transform: translateY(-2px); }
-
 /* Image hover zoom on split media */
 .split-media { overflow: hidden; }
 .split-media img { transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
@@ -292,3 +305,41 @@ em { font-style: italic; }
 @media (max-width: 520px) {
   .process-steps { grid-template-columns: 1fr; }
 }
+
+/* ===========================================================
+   MARQUEE (Vows-style scrolling banner)
+   =========================================================== */
+.marquee {
+  overflow: hidden; white-space: nowrap;
+  background: var(--charcoal); color: var(--ivory);
+  padding: 22px 0; border-top: 1px solid rgba(255, 255, 255, .08);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.marquee--light { background: var(--ivory-2); color: var(--charcoal); border-color: var(--line); }
+.marquee-track { display: inline-flex; align-items: center; will-change: transform; animation: marquee 30s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-track span {
+  font-family: var(--serif); font-style: italic; font-weight: 500;
+  font-size: clamp(1.4rem, 3.2vw, 2.3rem); padding: 0 1.6rem; display: inline-flex; align-items: center;
+}
+.marquee-track .sep { color: var(--gold); font-style: normal; font-size: .9em; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* ===========================================================
+   GALLERY HOVER OVERLAY (premium rollover)
+   =========================================================== */
+.gallery figure { position: relative; }
+.gallery figure::after {
+  content: ""; position: absolute; inset: 0; background: rgba(14, 13, 11, .28);
+  opacity: 0; transition: opacity .45s ease;
+}
+.gallery figure:hover::after { opacity: 1; }
+.gallery figure .view-tag {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -40%);
+  z-index: 2; color: #fff; font-size: .72rem; letter-spacing: .22em; text-transform: uppercase;
+  opacity: 0; transition: opacity .45s ease, transform .45s ease; pointer-events: none;
+}
+.gallery figure:hover .view-tag { opacity: 1; transform: translate(-50%, -50%); }
